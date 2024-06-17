@@ -63,6 +63,8 @@ class Ebook
 
     protected ?int $pagesCount = null;
 
+    protected ?int $charactersCount = null;
+
     protected bool $countsParsed = false;
 
     protected ?float $execTime = null;
@@ -328,6 +330,7 @@ class Ebook
 
         $this->wordsCount = $counts->getWordsCount();
         $this->pagesCount = $counts->getPagesCount();
+        $this->charactersCount = $counts->getCharactersCount();
 
         return $this;
     }
@@ -702,6 +705,22 @@ class Ebook
     }
 
     /**
+     * Count all characters in ebook.
+     */
+    public function getCharactersCount(): ?int
+    {
+        if ($this->charactersCount) {
+            return $this->charactersCount;
+        }
+
+        if (! $this->countsParsed) {
+            $this->convertCounts();
+        }
+
+        return $this->charactersCount;
+    }
+
+    /**
      * Execution time for parsing the ebook.
      */
     public function getExecTime(): ?float
@@ -931,6 +950,13 @@ class Ebook
         return $this;
     }
 
+    public function setCharactersCount(?int $charactersCount): self
+    {
+        $this->charactersCount = $charactersCount;
+
+        return $this;
+    }
+
     public function setHasParser(bool $hasParser): self
     {
         $this->hasParser = $hasParser;
@@ -978,6 +1004,7 @@ class Ebook
             'volume' => $this->volume,
             'wordsCount' => $this->wordsCount,
             'pagesCount' => $this->pagesCount,
+            'charactersCount' => $this->charactersCount,
             'path' => $this->path,
             'filename' => $this->filename,
             'basename' => $this->basename,

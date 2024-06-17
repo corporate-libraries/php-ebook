@@ -28,6 +28,8 @@ class EpubModule extends EbookModule
 
     protected ?int $wordsCount = null;
 
+    protected ?int $charactersCount = null;
+
     /** @var EpubHtml[] */
     protected array $html = [];
 
@@ -140,12 +142,13 @@ class EpubModule extends EbookModule
 
     public function toCounts(): Ebook
     {
-        if (! $this->wordsCount || ! $this->pagesCount) {
+        if (! $this->wordsCount || ! $this->pagesCount || ! $this->charactersCount) {
             $this->setCounts();
         }
 
         $this->ebook->setWordsCount($this->wordsCount);
         $this->ebook->setPagesCount($this->pagesCount);
+        $this->ebook->setCharactersCount($this->charactersCount);
 
         return $this->ebook;
     }
@@ -157,6 +160,8 @@ class EpubModule extends EbookModule
         }
 
         $wordsCount = 0;
+        $charactersCount = 0;
+
         foreach ($this->html as $html) {
             $body = $html->getBody();
             $content = strip_tags($body);
@@ -164,15 +169,18 @@ class EpubModule extends EbookModule
             $words = str_word_count($content, 1);
 
             $wordsCount += count($words);
+            $charactersCount += mb_strlen($content);
         }
 
         $pagesCount = (int) ceil($wordsCount / Ebook::wordsByPage());
 
         $this->wordsCount = $wordsCount;
+        $this->charactersCount = $charactersCount;
         $this->pagesCount = $pagesCount;
 
         return [
             'words' => $wordsCount,
+            'characters' => $charactersCount,
             'pages' => $pagesCount,
         ];
     }
@@ -273,6 +281,15 @@ class EpubModule extends EbookModule
         }
 
         return $this->pagesCount;
+    }
+
+    public function getCharactersCount(): ?int
+    {
+        if (is_null($this->charactersCount)) {
+            $this->setCounts();
+        }
+
+        return $this->charactersCount;
     }
 
     public function getWordsCount(): ?int
