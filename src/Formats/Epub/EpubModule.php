@@ -164,12 +164,20 @@ class EpubModule extends EbookModule
 
         foreach ($this->html as $html) {
             $body = $html->getBody();
+
             $content = strip_tags($body);
-            $content = preg_replace('/[\r\n|\n|\r)]+/', '', $content);
+
+            $content = html_entity_decode($content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+            $content = preg_replace('/[\r\n|\n|\r|\t|\x{00A0}]+/u', '', $content);
+
             $words = str_word_count($content, 1);
 
             $wordsCount += count($words);
-            $charactersCount += mb_strlen($content);
+
+            $strippedContent = preg_replace('/\s+/', '', $content);
+
+            $charactersCount += mb_strlen($strippedContent);
         }
 
         $pagesCount = (int) ceil($wordsCount / Ebook::wordsByPage());

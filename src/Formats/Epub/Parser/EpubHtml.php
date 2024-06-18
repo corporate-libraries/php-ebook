@@ -30,9 +30,10 @@ class EpubHtml
 
     private function getTag(string $html, string $tag): string
     {
-        preg_match('/<'.$tag.'[^>]*>(.*?)<\/'.$tag.'>/is', $html, $matches);
-        if (array_key_exists(1, $matches)) {
-            return trim($matches[1]);
+        preg_match('/<'.$tag.'.*>(.*?)<\/'.$tag.'>/is', $html, $matches);
+
+        if (array_key_exists(0, $matches)) {
+            return trim($matches[0]);
         }
 
         return '';
