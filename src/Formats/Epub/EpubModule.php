@@ -200,7 +200,7 @@ class EpubModule extends EbookModule
             if ($this->ebook->getArchive() === null) {
                 continue;
             }
-            $file = $this->ebook->getArchive()->find($path);
+            $file = $this->ebook->getArchive()->find(urldecode($path));
             if (! $file) {
                 continue;
             }
